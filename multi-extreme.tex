@@ -27,7 +27,7 @@ Applications to Multidimensional Extremes}
 
 %\subtitle{Applications to Multidimensional Extremes}
 
-\date{7th of May, 2025}
+\date{27th of May, 2025}
 
 \institute{Dep.\ of Mathematics and Statistics, University of Helsinki}
 
@@ -447,11 +447,11 @@ doi: \textcolor{hyscience}{\url{https://doi.org/10.1016/j.jmva.2024.105314}}}
   \begin{itemize}
     \item $\mathcal{R}$ is regularly varying $\iff$ $X$ is multivariate
     regularly varying \parencite{hult2002}
-    \pause
+    %\pause
     \item $\mathcal{R} \stackrel{\mathcal{D}}{=} \sqrt{\left(X -
     \mu\right)^\intercal \Sigma^{-1}\left(X - \mu\right)} =: \left\|X -
     \mu\right\|_{\Sigma}$
-    \pause
+    %\pause
     \item $\hat R_i = \left\|X_i - \hat\mu\left(\bm X\right)\right\|
     _{\hat\Sigma\left(\bm X\right)}$
     \item $\hat{\bm R} = (\hat R_1, \ldots, \hat R_n)$
@@ -464,23 +464,23 @@ doi: \textcolor{hyscience}{\url{https://doi.org/10.1016/j.jmva.2024.105314}}}
   \begin{itemize}
     \item We wish to estimate
     \begin{equation*}
-      Q_{p} = \left\{x \in \mathbb{R}^d : \left\|x - \mu\right\|_\Sigma \geq r_{p}\right\},
+      Q_{p} = \left\{x \in \mathbb{R}^d : \left\|x - \mu\right\|_\Sigma
+      \geq r_{p}\right\},
     \end{equation*}
     for a very small $p$, where $r_{p}$ is the $(1-p)$-quantile of the
     generating variate $\mathcal{R}$. \pause
     \item Define estimator $\hat Q_{p}$ as
     \begin{equation*}
       \hat Q_{p} = \left\{x \in \mathbb{R}^d :
-      \left\|x - \hat\mu\left(\bm X\right)\right\|_{\hat\Sigma\left(\bm X\right)}
+      \left\|x - \hat\mu\left(\bm X\right)\right\|
+      _{\hat\Sigma\left(\bm X\right)}
       \geq \hat x_{p}(\hat{\bm R})\right\},
     \end{equation*}
     where
     \begin{equation*}
       \hat x_{p}(\hat{\bm R}) = \hat{\bm R}_{n-k, n}
-      \left(\frac{k}{np}\right)^{\hat\gamma_H(\hat{\bm R})},
+      \left(\frac{k}{np}\right)^{\hat\gamma_H(\hat{\bm R})}.
     \end{equation*}
-    and $\hat\gamma_H(\hat{\bm R})$ is the separating Hill
-    estimator~\parencite{heikkila2019}.
   \end{itemize}
 \end{frame}
 
@@ -652,7 +652,7 @@ doi: \textcolor{hyscience}{\url{https://doi.org/10.48550/arXiv.2307.03581}}}
   \begin{itemize}
     \item[]
     \item Link to slides (Github):
-    \textcolor{hyscience}{\url{https://github.com/perej1/ics-and-related}}
+    \textcolor{hyscience}{\url{https://github.com/perej1/hel-seminar}}
   \end{itemize}
 \end{frame}
 
