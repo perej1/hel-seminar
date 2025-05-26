@@ -1,0 +1,14 @@
+Title:
+On the Impact of Approximation Errors on Extreme Value Inference: Applications
+to Multidimensional Extremes
+
+Abstract:
+Multidimensional extremes can be analyzed in a univariate setting by applying an
+appropriate functional to the observations. The chosen functional, which
+measures the extremity of an observation, depends on the context. Furthermore,
+the described approach often induces errors in the mapped univariate
+observations. In this presentation, we study the effect of approximation errors
+in assessing the extreme behavior of heavy-tailed random objects. As
+applications, we consider elliptical extreme quantile region estimation and
+extreme quantile estimation based on approximated Lp-norms corresponding to
+realizations of a stochastic process.
