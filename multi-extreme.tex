@@ -1,0 +1,665 @@
+\documentclass[11pt, aspectratio=169]{beamer}
+
+% Packages for math, language, encoding etc.
+\usepackage{tikz, ctable}
+\usepackage{bm}
+\usepackage[english]{babel}
+%\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[absolute,overlay]{textpos}	
+\usepackage{amsfonts,amssymb,amsbsy,amsthm,amsmath,mathtools,enumerate,verbatim}
+\usepackage{stmaryrd} % double square brackets
+\usepackage{color, colortbl}
+\usepackage[font=scriptsize]{caption}
+\usepackage{csquotes}
+\usepackage{tabularray}
+\usepackage{datetime}
+
+\usepackage[T1]{fontenc}
+% package for font spacing
+\usepackage[tracking=smallcaps, letterspace=-55]{microtype} 
+
+\author[Jaakko Pere]{Jaakko Pere}
+
+\title{On the Impact of Approximation Errors on Extreme Value Inference:
+Applications to Multidimensional Extremes}
+
+%\subtitle{Applications to Multidimensional Extremes}
+
+\date{7th of May, 2025}
+
+\institute{Dep.\ of Mathematics and Statistics, University of Helsinki}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% load packages
+% add packages if needed
+
+% set beamer colors
+\definecolor{hyblue}{RGB}{0,155,255}
+\definecolor{hyscience}{RGB}{252,163,17}
+
+\setbeamercolor{alerted text}{fg=hyscience}
+\setbeamercolor{structure}{fg=hyblue}
+\setbeamercolor{item}{fg=white}
+%\setbeamercolor{section in toc}{fg=white,bg=gray}
+
+\setbeamercolor{background canvas}{bg=black!90}
+\setbeamercolor{normal text}{fg=white}\usebeamercolor*{normal text}
+
+%\setbeamertemplate{itemize item}{\color{white}\bullet}
+
+% set font (helvetica plays the role of Arial)
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% set frametitle
+\setbeamercolor{frametitle}{fg=white}
+\setbeamerfont{frametitle}{series=\bfseries, size=\large}
+\setbeamertemplate{frametitle}[default][left,leftskip=1cm] % left shift of frame title
+\addtobeamertemplate{frametitle}{\vspace{0.5cm}}{\vspace{1cm}} % spacing above and below frame title
+
+% set footline
+\beamertemplatenavigationsymbolsempty
+
+% Other style settings
+\setbeamertemplate{itemize items}[circle] % makes the bullets in lists circles
+
+% Bibliography and style.
+\usepackage[style=apa]{biblatex}
+\addbibresource{sources.bib}
+
+\DeclareCiteCommand{\cite}
+  {\color{hyscience}\usebibmacro{prenote}}%
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+  
+\DeclareCiteCommand{\textcite}
+  {\color{hyscience}\boolfalse{cbx:parens}}
+  {\usebibmacro{citeindex}%
+   \iffirstcitekey
+     {\setcounter{textcitetotal}{1}}
+     {\stepcounter{textcitetotal}%
+      \textcitedelim}%
+   \usebibmacro{textcite}}
+  {\ifbool{cbx:parens}
+     {\bibcloseparen\global\boolfalse{cbx:parens}}
+     {}}
+  {\usebibmacro{textcite:postnote}}  
+
+\DeclareCiteCommand{\parencite}[\mkcolorbibparens]
+  {\usebibmacro{prenote}}%
+  {\usebibmacro{citeindex}%
+   \usebibmacro{cite}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+\makeatletter
+\newrobustcmd{\mkcolorbibparens}[1]{%
+  \begingroup
+  \color{hyscience}%
+  \blx@blxinit
+  \blx@setsfcodes
+  \bibopenparen#1\bibcloseparen
+  \endgroup}
+\makeatother
+
+
+\setbeamertemplate{bibliography item}{}
+
+% Show greyed table of contents before section.
+\AtBeginSection[]
+{
+    \begin{frame}
+        \frametitle{Table of Contents}
+        \tableofcontents[currentsection]
+    \end{frame}
+}
+\setcounter{tocdepth}{1}
+
+
+\AtBeginSubsection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{subtitle}
+    \usebeamerfont{subtitle}\insertsubsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+
+\DeclareMathOperator{\mda}{MDA}
+\DeclareMathOperator{\mrv}{MRV}
+\DeclareMathOperator{\rv}{RV}
+\DeclareMathOperator{\erv}{ERV}
+\DeclareMathOperator{\lp}{L}
+
+\begin{document}
+
+% Title page
+{
+  \setbeamercolor{background canvas}{bg=black!90}
+  \setbeamertemplate{background}{
+    \setlength{\unitlength}{1cm}
+    \begin{picture}(16,8)
+      \put(-0.1,5){\includegraphics[width=3cm]{logo-white.png}}
+    \end{picture}
+    \setlength{\unitlength}{1pt}
+  }
+  %\setbeamertemplate{headline}{ }%
+  \begin{frame}
+    \vspace{2.5cm}
+    \begin{center}
+      \textcolor{hyblue}{\bf\MakeUppercase{\Large\inserttitle}} \\
+      %{\textcolor{hyblue}{\large\insertsubtitle}} \\
+      {\large\insertauthor} \\
+      {\large\insertdate} \\
+      {\large\insertinstitute}
+    \end{center}
+  \end{frame}
+}
+
+\begin{frame}{Agenda of the presentation}
+  \tableofcontents
+\end{frame}
+
+\section{Univariate Extreme Value Theory}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{What is Extreme Value Theory?}
+  Extreme value theory is concerned about inference of rare events.
+  \pause
+  \vspace{\baselineskip}
+  \begin{itemize}
+    \item Extreme quantile estimation
+    \item Tail probability estimation
+    \item Estimation of the endpoint of a given distribution
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \begin{definition}[Maximum domain of attraction]
+    Let $Y_1, \ldots, Y_n$ be i.i.d.\ observations of a random variable $Y$. If
+    there exist sequences $a_n > 0$ and $b_n\in\mathbb{R}$, and a random
+    variable $G$ with a nondegenerate distribution such that
+    \begin{equation*}
+	    \frac{\max\left(Y_1, \ldots, Y_n\right) - b_n}{a_n}
+      \stackrel{\mathcal{D}}{\to} G, \quad n\to\infty,
+    \end{equation*}
+    we say that $Y$ belongs to the maximum domain of attraction of $G$, and
+    denote $Y\in\mda\left(G\right)$.
+  \end{definition}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Extreme Value Index}
+  \begin{theorem}[\cite{fisher1928,gnedenko1943}]
+    Up to location and scale, the distribution of $G = G_\gamma$ is
+    characterized by the parameter $\gamma$, called the \emph{extreme value
+    index}. That is, the distribution of ${G_\gamma}$ is of the type
+    \begin{equation*}
+      F_{G_\gamma}\left(x\right) =
+      \begin{cases}
+        \exp\left(-\left(1 + \gamma x\right)^{-1/\gamma}\right),
+        \quad 1 + \gamma x > 0 &\textnormal{if}\quad \gamma\neq 0, \\
+        \exp\left(-e^{-x}\right),
+        \quad x\in\mathbb{R} &\textnormal{if}\quad \gamma = 0.
+      \end{cases}
+    \end{equation*}
+  \end{theorem}
+  \pause
+  In the case $\gamma > 0$ the type of $G_\gamma$ is Fr\'echet,
+  \begin{equation*}
+    \Phi_\gamma\left(x\right) =
+    \begin{cases}
+      0, & x\leq 0 \\
+      \exp\left(-x^{-1/\gamma}\right), & x > 0.
+    \end{cases}
+  \end{equation*}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Tail Quantile Function}
+  Define the tail quantile function corresponding to a distribution $F$ by
+  \begin{equation*}
+    U\left(t\right) = F^{\leftarrow}\left(1 - \frac{1}{t}\right), \quad t > 1,
+  \end{equation*}
+  where we denote the left-continuous inverse of a nondecreasing function by
+  $f^\leftarrow\left(y\right) = \inf\left\{x\in\mathbb{R} : f(x) \geq
+  y\right\}$.
+  \pause
+  \begin{itemize}
+    \item[] 
+  \end{itemize}
+  That is, $U\left(1/p\right)$ is the $(1-p)$-quantile.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \begin{definition}[Regular variation]
+    A Lebesgue measurable function $f:\mathbb{R}^+\to\mathbb{R}$ that is
+    eventually positive is regularly varying with index $\alpha\in\mathbb{R}$ if
+    for all $x > 0$,
+    \begin{equation*}
+      \lim_{t\to\infty}\frac{f\left(tx\right)}{f\left(t\right)} = x^\alpha.
+    \end{equation*}
+    Then we denote $f\in \rv_\alpha$. Furthermore, we say that a function $f$ is
+    slowly varying if $f\in \rv_0$.
+  \end{definition}
+  \pause
+  Intuition:
+  \begin{equation*}
+    f\in\rv_\alpha \iff f(x) = L(x)x^{\alpha}, \quad L\in\rv_0.
+  \end{equation*}
+  We also have
+  \begin{equation*}
+    \lim_{x\to\infty} x^{-\varepsilon} L(x) = 0, \quad\forall
+    \, \varepsilon > 0.
+  \end{equation*}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Construction of an Extreme Quantile Estimator}
+  \begin{theorem}[\cite{gnedenko1943,dehaan1970}]
+    Let $\gamma > 0$. We have
+    \begin{equation*}
+      Y\in\mda\left(G_\gamma\right) \iff 1-F\in \rv_{-1/\gamma}
+      \iff U\in \rv_\gamma.
+    \end{equation*}
+    \pause
+  \end{theorem}
+  Choose $t=n/k$ and $x = k/(np)$ to get the approximation
+    \begin{equation*}
+      U\left(\frac{1}{p}\right)\approx U\left(\frac{n}{k}\right)
+      \left(\frac{k}{np}\right)^{\gamma}.
+    \end{equation*}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Extreme Quantile Estimation}
+  Suppose $\bm Y = \left(Y_1, \ldots, Y_n\right)$ is an i.i.d.\ sample of
+  $Y\in\mda\left(G_\gamma\right)$, $\gamma > 0$. Denote order statistics
+  corresponding to the sample $\bm Y$ by $\bm Y_{1, n} \leq \dots \leq \bm Y_{n,
+  n}$. Then an estimator for the extreme $(1-p)$-quantile $x_{p} =
+  U\left(1/p\right)$ can be given as
+  \begin{equation*}
+    \hat x_{p}\left(\bm Y\right) = \bm Y_{n-k,n}
+    \left(\frac{k}{np}\right)^{\hat\gamma\left(\bm Y\right)},
+  \end{equation*}
+  where $\hat\gamma$ is an estimator for the extreme value index $\gamma$.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{The Hill Estimator \parencite{hill1975,mason1982}}
+  Suppose $\bm Y = \left(Y_1, \ldots, Y_n\right)$ is an i.i.d.\ sample of
+  $Y\in\mda\left(G_\gamma\right)$, $\gamma > 0$. The Hill estimator is defined
+  as
+  \begin{equation*}
+    \hat\gamma_H\left(\bm Y\right) = \frac{1}{k}\sum_{i = 0}^{k - 1}
+    \ln\left(\frac{\bm Y_{n-i,n}}{\bm Y_{n-k,n}}\right).
+  \end{equation*}
+  \pause
+  If additionally as $n\to\infty$, $k = k_n\to\infty$, $k/n\to 0$, then
+  \begin{equation*}
+    \hat\gamma_H\left(\bm Y\right)\stackrel{\mathbb{P}}{\to} \gamma,
+    \quad n\to\infty.
+  \end{equation*}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Multidimensional Extremes and Impact of Approximation Errors}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{A Traditional Approach to Extremes}
+  \small
+  \begin{definition}[Multivariate regular variation]
+    Let $\Theta$ be a probability measure on the unit sphere $\mathbb{S}^{d-1} =
+    \{\bm x\in\mathbb{R}^d : \left\|\bm x\right\|_2 = 1\}$. A $d$-dimensional
+    random vector $X$ is multivariate regularly varying with the extreme value
+    index $\gamma > 0$ and the probability measure $\Theta$ if
+    \begin{equation*}
+      \lim_{t\to\infty} \frac{\mathbb{P}\left(\left\| X \right\|_2 \geq tx,
+      X/\left\|X\right\|_2\in A\right)}
+      {\mathbb{P}\left(\left\|X\right\|_2\geq t\right)} = x^{-1/\gamma}
+      \Theta\left(A\right),
+    \end{equation*}
+    for every $x > 0$ and for every Borel set $A$ in $\mathbb{S}^{d-1}$ with
+    $\Theta\left(\partial A\right) = 0$.
+\end{definition}
+\pause
+\begin{itemize}
+  \item Estimation of multivariate extreme quantile regions under multivariate
+  regular variation based on
+  \begin{itemize}
+    \item density~\parencite{cai2011}, and
+    \item half-space depth~\parencite{he2016}.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{An Alternative Framework}
+  \begin{enumerate}
+    \item Approach in multidimensional extremes:
+    \begin{itemize}
+      \item Let $X\in \mathbb{S}$ be a random object, where, e.g., $\mathbb{S} =
+      \mathbb{R}^d$ or $\mathbb{S} = \lp^p([0,1]^d)$.
+      \pause
+      \item Apply extreme value theory to $g(X)$, where $g$ is a suitable map
+      depending on the context.
+    \end{itemize}
+    \pause
+    \item Often instead of the sample $\bm Y$, only approximations $\hat{\bm Y}
+    = (\hat Y_1, \ldots, \hat Y_n)$ are available.
+    \pause
+    \begin{itemize}
+      \item How the approximation error affects the asymptotics?
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Applications}
+  \begin{itemize}
+    \item Elliptical extreme quantile region estimation~\parencite{pere2024}.
+    \item Extreme value index estimation for latent model~\parencite{virta2024}.
+    \item Estimation of the extreme value index corresponding to functional PCA
+    scores~\parencite{kim2019}.
+    \item Extreme quantile estimation under approximated
+    $\lp^p$-norms~\parencite{pere2024b}.
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Extreme Quantile Region Estimation Under Ellipticity}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{J. Pere, P. Ilmonen, and L. Viitasaari (2024). On extreme quantile
+region estimation under heavy-tailed elliptical distributions. \emph{Journal of
+Multivariate Analysis}.\\
+doi: \textcolor{hyscience}{\url{https://doi.org/10.1016/j.jmva.2024.105314}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Extreme Quantile Region Estimation}
+  Let $X\in\mathbb{R}^d$ be a random vector with density $f$. We wish to
+  estimate
+  \begin{equation*}
+    Q_p = \left\{x\in\mathbb{R}^d : f(x)\leq \beta_p\right\},
+  \end{equation*}
+  where $\beta_p$ is chosen such that $\mathbb{P}\left(X\in Q_p\right) = p$, and
+  $p$ is small.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \begin{center}
+    \begin{figure}
+      \includegraphics[width=0.6\textwidth]{elliptical}
+  \end{figure}
+\end{center}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Elliptical Distributions \parencite{cambanis1981}} We say that a
+  $d$-variate random vector $X$ is elliptically distributed if
+  \begin{equation*}
+    X \stackrel{\mathcal{D}}{=} \mu + \mathcal{R} \Lambda  S,
+  \end{equation*}
+  where
+  \begin{itemize}
+    \item $\mu\in\mathbb{R}^d$ is called the \emph{location vector},
+    \item $\mathcal{R}$ is a nonnegative random variable called the
+    \emph{generating variate},
+    \item $\Lambda \in \mathbb{R}^{d\times d}$ is a matrix such that $\Sigma =
+    \Lambda \Lambda^\intercal$ is a symmetric positive definite matrix (matrix
+    $\Sigma$ is called \emph{scatter matrix}),
+    \item $S$ is an $d$-dimensional random vector uniformly distributed over the
+    unit-sphere $\{x\in\mathbb{R}^d: x^\intercal x = 1\}$ and
+    \item Random variables $\mathcal{R}$ and $S$ are independent.
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Role of the Generating Variate $\mathcal{R}$}
+  \begin{itemize}
+    \item $\mathcal{R}$ is regularly varying $\iff$ $X$ is multivariate
+    regularly varying \parencite{hult2002}
+    \pause
+    \item $\mathcal{R} \stackrel{\mathcal{D}}{=} \sqrt{\left(X -
+    \mu\right)^\intercal \Sigma^{-1}\left(X - \mu\right)} =: \left\|X -
+    \mu\right\|_{\Sigma}$
+    \pause
+    \item $\hat R_i = \left\|X_i - \hat\mu\left(\bm X\right)\right\|
+    _{\hat\Sigma\left(\bm X\right)}$
+    \item $\hat{\bm R} = (\hat R_1, \ldots, \hat R_n)$
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{The Estimator}
+  \begin{itemize}
+    \item We wish to estimate
+    \begin{equation*}
+      Q_{p} = \left\{x \in \mathbb{R}^d : \left\|x - \mu\right\|_\Sigma \geq r_{p}\right\},
+    \end{equation*}
+    for a very small $p$, where $r_{p}$ is the $(1-p)$-quantile of the
+    generating variate $\mathcal{R}$. \pause
+    \item Define estimator $\hat Q_{p}$ as
+    \begin{equation*}
+      \hat Q_{p} = \left\{x \in \mathbb{R}^d :
+      \left\|x - \hat\mu\left(\bm X\right)\right\|_{\hat\Sigma\left(\bm X\right)}
+      \geq \hat x_{p}(\hat{\bm R})\right\},
+    \end{equation*}
+    where
+    \begin{equation*}
+      \hat x_{p}(\hat{\bm R}) = \hat{\bm R}_{n-k, n}
+      \left(\frac{k}{np}\right)^{\hat\gamma_H(\hat{\bm R})},
+    \end{equation*}
+    and $\hat\gamma_H(\hat{\bm R})$ is the separating Hill
+    estimator~\parencite{heikkila2019}.
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Draft of the Consistency Result}
+  Suppose that $\mathcal{R}\in\mda\left(G_\gamma\right)$ for $\gamma > 0$ and
+  $p_n\to 0$ with a suitable rate, as $n\to\infty$ (and other technical
+  conditions). Then
+  \begin{equation*}
+    \frac{\mathbb{P}\left(X\in\hat Q_{p_n}\triangle Q_{p_n}\right)}{p_n}
+    \to 0, \quad \text{as}\ n\to\infty,
+  \end{equation*}
+  where $B_1\triangle B_2 = (B_1\setminus B_2) \cup (B_2\setminus B_1)$, $\quad
+  B_1,B_2\in\mathbb{R}^d$. 
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Affine Equivariance}
+  Let $A\in\mathbb{R}^{d\times d}$ be an invertible matrix and let
+  $a\in\mathbb{R}^d$. Let $\bm X = \left(X_1, \ldots, X_n\right)$ be a sample
+  from an elliptical distribution, $Z_i = AX_i + a$ and $\bm Z = \left(Z_1,
+  \ldots, Z_n\right)$. Let $\hat Q_p$ and $\hat Q_p'$ be extreme quantile region
+  estimators computed with $\bm X$ and $\bm Z$, respectively. If estimators of
+  the location and the scatter are affine equivariant in the sense that
+  \begin{equation*}
+    \hat\mu\left(\bm Z\right) = A\hat\mu\left(\bm X\right) + a
+    \quad\textnormal{and}\quad
+    \hat\Sigma\left(\bm Z\right) = A\hat\Sigma\left(\bm X\right) A^\intercal,
+  \end{equation*}
+  then
+  \begin{equation*}
+    \hat Q_p' = \left\{Ax + a: x\in Q_p\right\}.
+  \end{equation*}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Extreme Quantile Estimation for $\lp^p$-Norms}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{J. Pere, B. Avelin, V. Garino, P. Ilmonen, and L. Viitasaari (2024).
+On the Impact of Approximation Errors on Extreme Quantile Estimation with
+Applications to Functional Data Analysis. \emph{Submitted}. \\
+doi: \textcolor{hyscience}{\url{https://doi.org/10.48550/arXiv.2307.03581}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Draft of a Result: Controlling the Approximation Errors}
+  Let $\gamma > 0$. Let $Y_1, \ldots, Y_n$ be i.i.d.\ copies of
+  $Y\in\mda\left(G_\gamma\right)$ and $\hat{\bm Y} = (\hat Y_1, \ldots, \hat
+  Y_n)$ the corresponding approximations. Denote errors by $E_i = \left|\hat Y_i
+  - Y_i\right|$. If
+  \begin{equation*}
+    \sqrt{k}\frac{\bm E_{n,n}}{U_Y\left(n/k\right)}\stackrel{\mathbb{P}}{\to}0,
+    \quad n\to\infty,
+  \end{equation*}
+  then
+  \begin{equation*}
+    \sqrt{k}\left(\hat\gamma(\hat{\bm Y}) - \gamma\right)
+    \quad\textnormal{and}\quad
+    \frac{\sqrt{k}}{\ln\left(k/(np)\right)}\left(\frac{\hat x_p(\hat{\bm Y})}
+    {U(1/p)} - 1\right)
+  \end{equation*}
+  are asymptotically normally distributed under the standard assumptions
+  (second-order condition, rate for $p = p_n$, $k = k_n\to\infty$, $k/n\to 0$,
+  as $n\to\infty$).
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Approximated $\lp^p$-Norms}
+  \begin{itemize}
+    \item Let $X\in \lp^p\left([0, 1]^d\right)$, and let $X_1,\ldots, X_n$ be
+    i.i.d.\ copies of $X$.
+    \item We wish to estimate extreme value index and extreme quantiles
+    corresponding to $\|X\|_p\in\mda\left(G_\gamma\right)$, $\gamma > 0$.
+    \pause
+    \item In practice we never observe $X_1, \ldots, X_n$.
+    \pause
+    \item Approximate norms with Riemann sums or Monte Carlo integration.
+    \item Use approximated norms $\hat{Y}_i$ in the estimation.
+    \pause
+    \item As the estimator of the extreme value index we choose the Hill
+    estimator
+    \begin{equation*}
+      \hat\gamma(\hat{\bm Y}) = \frac{1}{k}\sum_{i = 0}^{k-1}
+      \ln\left(\frac{\hat{\bm Y}_{n-i,n}}{\hat{\bm Y}_{n-k,n}}\right).
+    \end{equation*}
+  \end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Riemann Sum Approximated Norms}
+  Let $\gamma > 0$. Let $X_i$ be i.i.d.\ copies of $X\in
+  \lp^p\left([0,1]\right)$, $p\in [1,\infty]$, s.t.\ $Y =
+  \|X\|_p\in\mda\left(G_\gamma\right)$. Let $\hat Y_i$ be the Riemann sum
+  approximated norms (based on discretizations with $m$ equidistant observed
+  points). Suppose for all $s,t\in [0,1]$, $X$ satisfies
+  \begin{equation*}
+    \left|X(t) - X(s)\right| \leq V\phi\left(|t-s|\right) \quad a.s.,
+  \end{equation*}
+  for some random variable $V\in\mda\left(G_{\gamma'}\right)$, $\gamma' > 0$,
+  and for some continuous decreasing function $\phi:\mathbb{R}^+\to
+  \mathbb{R}^+$ with $\phi\left(0\right) = 0$.
+  \pause
+  Then the condition
+  \begin{equation*}
+    \sqrt{k}\frac{\bm E_{n,n}}{U_Y\left(n/k\right)}\stackrel{\mathbb{P}}{\to}0,
+    \quad n\to\infty,
+  \end{equation*}
+  translates into
+  \begin{equation*}
+    \sqrt{k}\phi\left(\frac{1}{m}\right)k^\gamma n^{\gamma' - \gamma}\to 0,
+    \quad n\to\infty.
+  \end{equation*}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    \includegraphics[width = 0.5\textwidth]{functional}
+    \caption{Independent and identically distributed observations from a
+    stochastic process $X(t) = \mathcal{R}Z(t)$, where
+    $\mathcal{R}\in\mda\left(G_\gamma\right)$, $\gamma > 0$, and $Z$ is a
+    Brownian motion.}
+  \end{figure}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Concentration for $\hat\gamma(\hat{\bm Y})$} In order to give
+  concentration inequality for $\mathbb{P}\left(\left|\hat\gamma(\hat{\bm Y}) -
+  \hat\gamma(\bm Y)\right| > x\right)$ one needs to control the errors
+  \begin{equation*}
+    \mathbb{P}\left(\frac{\bm E_{n,n}}{U_Y\left(n/k\right)} > x\right)
+  \end{equation*}
+  and the convergence
+  \begin{equation*}
+    \mathbb{P}\left(\left|\frac{\bm
+    Y_{n-k,n}}{U(n/k)} - 1\right| > x\right).
+  \end{equation*}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Chernoff-Type Bound for Intermediate Order Statistics}
+  Let $\gamma > 0$. Let $\bm Y = \left(Y_1, \ldots, Y_n\right)$ be an i.i.d.\
+  sample of $Y\in\mda\left(G_\gamma\right)$ and assume that, as $n\to\infty$,
+  $k=k_n\to\infty$, and $k/n\to 0$. Then for sufficiently large $n$
+  \begin{equation*}
+    \mathbb{P}\left(\left|\frac{\bm
+    Y_{n-k,n}}{U(n/k)} - 1\right| > x\right)
+    \leq C_1 e^{-C_2 k},
+  \end{equation*} 
+  where the constants $C_1 > 0$ and $C_2 > 0$ depend on $x$ and $\gamma$.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  Thank you for your attention!
+  \begin{itemize}
+    \item[]
+    \item Link to slides (Github):
+    \textcolor{hyscience}{\url{https://github.com/perej1/ics-and-related}}
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[allowframebreaks]{References}
+  \printbibliography
+\end{frame}
+
+\end{document}
